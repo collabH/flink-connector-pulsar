@@ -21,6 +21,7 @@ package org.apache.flink.connector.pulsar.source.enumerator.cursor.start;
 import org.apache.flink.connector.pulsar.source.enumerator.cursor.CursorPosition;
 import org.apache.flink.connector.pulsar.source.enumerator.cursor.StartCursor;
 
+// 指定时间戳开始消费
 /** This cursor would left pulsar start consuming from a specific publish timestamp. */
 public class TimestampStartCursor implements StartCursor {
     private static final long serialVersionUID = 5170578885838095320L;

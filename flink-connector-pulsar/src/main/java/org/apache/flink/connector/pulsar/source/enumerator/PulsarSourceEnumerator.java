@@ -32,7 +32,6 @@ import org.apache.flink.connector.pulsar.source.enumerator.topic.range.RangeGene
 import org.apache.flink.connector.pulsar.source.split.PulsarPartitionSplit;
 import org.apache.flink.metrics.groups.SplitEnumeratorMetricGroup;
 import org.apache.flink.util.FlinkRuntimeException;
-
 import org.apache.pulsar.client.admin.PulsarAdmin;
 import org.apache.pulsar.client.admin.PulsarAdminException;
 import org.apache.pulsar.client.api.PulsarClient;
@@ -41,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nullable;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -52,20 +50,28 @@ import static org.apache.flink.connector.pulsar.common.config.PulsarClientFactor
 import static org.apache.flink.connector.pulsar.source.enumerator.PulsarSourceEnumState.initialState;
 import static org.apache.flink.connector.pulsar.source.enumerator.assigner.SplitAssigner.createAssigner;
 
-/** The enumerator class for the pulsar source. */
+/**
+ * The enumerator class for the pulsar source.
+ */
 @Internal
 public class PulsarSourceEnumerator
         implements SplitEnumerator<PulsarPartitionSplit, PulsarSourceEnumState> {
 
     private static final Logger LOG = LoggerFactory.getLogger(PulsarSourceEnumerator.class);
-
+    // pulsar client
     private final PulsarClient pulsarClient;
+    // pulsar admin
     private final PulsarAdmin pulsarAdmin;
+    // pulsar订阅者
     private final PulsarSubscriber subscriber;
+    // 消费起始游标
     private final StartCursor startCursor;
+    // topicRange生成器
     private final RangeGenerator rangeGenerator;
+    // pulsar source配置
     private final SourceConfiguration sourceConfiguration;
     private final SplitEnumeratorContext<PulsarPartitionSplit> context;
+    // split分配器
     private final SplitAssigner splitAssigner;
     private final SplitEnumeratorMetricGroup metricGroup;
 
@@ -84,6 +90,7 @@ public class PulsarSourceEnumerator
                 rangeGenerator,
                 sourceConfiguration,
                 context,
+                // 创建TopicPartition集合
                 initialState());
     }
 
@@ -96,6 +103,7 @@ public class PulsarSourceEnumerator
             SplitEnumeratorContext<PulsarPartitionSplit> context,
             PulsarSourceEnumState enumState)
             throws PulsarClientException {
+        // 基于source配置构建client、admin、assigner
         this.pulsarClient = createClient(sourceConfiguration);
         this.pulsarAdmin = createAdmin(sourceConfiguration);
         this.subscriber = subscriber;
@@ -103,13 +111,16 @@ public class PulsarSourceEnumerator
         this.rangeGenerator = rangeGenerator;
         this.sourceConfiguration = sourceConfiguration;
         this.context = context;
+        // split分配器
         this.splitAssigner = createAssigner(stopCursor, sourceConfiguration, context, enumState);
         this.metricGroup = context.metricGroup();
     }
 
     @Override
     public void start() {
+        // 初始化subscriber和rangeGenerator
         subscriber.open(pulsarClient, pulsarAdmin);
+        // nothing
         rangeGenerator.open(sourceConfiguration);
 
         // Expose the split assignment metrics if Flink has supported.
@@ -118,12 +129,14 @@ public class PulsarSourceEnumerator
         }
 
         // Check the pulsar topic information and convert it into source split.
+        // 开启分区发现能力
         if (sourceConfiguration.isEnablePartitionDiscovery()) {
             LOG.info(
                     "Starting the PulsarSourceEnumerator for subscription {} "
                             + "with partition discovery interval of {} ms.",
                     sourceConfiguration.getSubscriptionDesc(),
                     sourceConfiguration.getPartitionDiscoveryIntervalMs());
+            // 按照配置间隔动态发现分区
             context.callAsync(
                     this::getSubscribedTopicPartitions,
                     this::checkPartitionChanges,
@@ -165,6 +178,7 @@ public class PulsarSourceEnumerator
                 "Adding reader {} to PulsarSourceEnumerator for subscription {}.",
                 subtaskId,
                 sourceConfiguration.getSubscriptionDesc());
+        // subtaskId=readerId
         assignPendingPartitionSplits(singletonList(subtaskId));
     }
 
@@ -205,7 +219,7 @@ public class PulsarSourceEnumerator
      * <p>NOTE: This method should only be invoked in the coordinator executor thread.
      *
      * @param fetchedPartitions Map from topic name to its description
-     * @param throwable Exception in worker thread
+     * @param throwable         Exception in worker thread
      */
     private void checkPartitionChanges(Set<TopicPartition> fetchedPartitions, Throwable throwable) {
         if (throwable != null) {
@@ -243,7 +257,9 @@ public class PulsarSourceEnumerator
         assignPendingPartitionSplits(registeredReaders);
     }
 
-    /** Query the unassigned splits and assign them to the available readers. */
+    /**
+     * Query the unassigned splits and assign them to the available readers.
+     */
     private void assignPendingPartitionSplits(List<Integer> pendingReaders) {
         if (pendingReaders.isEmpty()) {
             return;

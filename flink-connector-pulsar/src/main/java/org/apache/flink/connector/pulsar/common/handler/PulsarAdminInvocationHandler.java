@@ -39,7 +39,7 @@ import static org.apache.flink.connector.pulsar.common.config.PulsarOptions.PULS
 import static org.apache.flink.connector.pulsar.common.config.PulsarOptions.PULSAR_ADMIN_REQUEST_RETRIES;
 import static org.apache.flink.connector.pulsar.common.config.PulsarOptions.PULSAR_ADMIN_REQUEST_WAIT_MILLIS;
 import static org.apache.pulsar.shade.com.google.common.util.concurrent.Uninterruptibles.sleepUninterruptibly;
-
+// 包装PulsarAdmin，调用pulsarAdmin Api时默认提供重试和限流能力
 /** A wrapper which wraps the {@link PulsarAdmin} with request retry and rate limit support. */
 public class PulsarAdminInvocationHandler implements InvocationHandler {
     private static final Logger LOG = LoggerFactory.getLogger(PulsarAdminInvocationHandler.class);

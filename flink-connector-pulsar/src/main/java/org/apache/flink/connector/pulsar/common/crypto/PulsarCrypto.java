@@ -33,6 +33,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
+ * Flink使用端到端消息加密，支持默认和关闭
  * Use it for end-to-end encryption support in Flink. You should provide at least a {@link
  * CryptoKeyReader} and the encryption keys.
  */

@@ -92,6 +92,7 @@ import static org.apache.flink.connector.pulsar.common.config.PulsarOptions.PULS
 import static org.apache.flink.connector.pulsar.common.config.PulsarOptions.PULSAR_USE_TCP_NO_DELAY;
 import static org.apache.pulsar.client.api.SizeUnit.BYTES;
 
+// pulsar client/admin工厂，根据配置构建pulsar客户端
 /** The factory for creating pulsar client classes from {@link PulsarConfiguration}. */
 @Internal
 public final class PulsarClientFactory {

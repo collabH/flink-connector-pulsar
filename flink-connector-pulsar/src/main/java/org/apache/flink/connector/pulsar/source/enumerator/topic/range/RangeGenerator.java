@@ -29,6 +29,7 @@ import org.apache.pulsar.client.api.SubscriptionType;
 import java.io.Serializable;
 import java.util.List;
 
+// 为给定topic生成TopicRange，被用于pulsar的Key_Shared消费模式，TopicRange为使用Key_Shared策略分配不同的pulsar source reader
 /**
  * A generator for generating the {@link TopicRange} for given topic. It was used for pulsar's
  * {@link SubscriptionType#Key_Shared} mode. {@link TopicRange} would be used in {@link

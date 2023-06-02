@@ -37,6 +37,7 @@ import static org.apache.pulsar.client.util.RetryMessageUtil.DLQ_GROUP_TOPIC_SUF
 import static org.apache.pulsar.client.util.RetryMessageUtil.MAX_RECONSUMETIMES;
 import static org.apache.pulsar.client.util.RetryMessageUtil.RETRY_GROUP_TOPIC_SUFFIX;
 
+// pulsar consumer构建器
 /** Override the default consumer builder for supporting build the custom Key_Shared consumer. */
 public class PulsarConsumerBuilder<T> extends ConsumerBuilderImpl<T> {
 

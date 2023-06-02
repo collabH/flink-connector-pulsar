@@ -82,8 +82,9 @@ public final class CursorPosition implements Serializable {
             PulsarAdmin pulsarAdmin, String topicName, String subscriptionName)
             throws PulsarAdminException {
         List<String> subscriptions = pulsarAdmin.topics().getSubscriptions(topicName);
-
+        // 如果订阅名称不存在则进行初始化
         if (!subscriptions.contains(subscriptionName)) {
+            // 创建订阅者，默认从最新的开始消费
             pulsarAdmin
                     .topics()
                     .createSubscription(topicName, subscriptionName, MessageId.earliest);

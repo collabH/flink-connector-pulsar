@@ -27,6 +27,7 @@ import org.apache.pulsar.client.api.SubscriptionType;
 
 import java.io.Serializable;
 
+// 起始消费策略，支持从最新/最早的消息开始，也支持从指定时间/messageId开始
 /**
  * An interface for users to specify the start position of a pulsar subscription. Since it would be
  * serialized into split, the implementation for this interface should be well considered. I don't

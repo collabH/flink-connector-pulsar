@@ -24,6 +24,7 @@ import org.apache.flink.connector.pulsar.source.enumerator.cursor.StartCursor;
 import org.apache.pulsar.client.api.ConsumerBuilder;
 import org.apache.pulsar.client.api.MessageId;
 
+// 指定messageId开启消费
 /** This cursor would leave pulsar start consuming from a specific message id. */
 public class MessageIdStartCursor implements StartCursor {
     private static final long serialVersionUID = -8057345435887170111L;

@@ -25,6 +25,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
+ * pulsar split状态
  * The state class for pulsar source enumerator, used for storing the split state. This class is
  * managed and controlled by {@link SplitAssigner}.
  */

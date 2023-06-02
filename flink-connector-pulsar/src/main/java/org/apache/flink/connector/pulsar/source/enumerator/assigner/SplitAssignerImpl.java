@@ -58,22 +58,30 @@ class SplitAssignerImpl implements SplitAssigner {
         this.initialized = false;
     }
 
+    /**
+     * 消费特定分区数据
+     * @param fetchedPartitions The available partitions queried from Pulsar broker.
+     * @return
+     */
     @Override
     public List<TopicPartition> registerTopicPartitions(Set<TopicPartition> fetchedPartitions) {
         List<TopicPartition> newPartitions = new ArrayList<>();
 
         for (TopicPartition partition : fetchedPartitions) {
+            // 判断是否已经消费过
             if (!appendedPartitions.contains(partition)) {
                 appendedPartitions.add(partition);
                 newPartitions.add(partition);
 
                 // Calculate the reader id by the current parallelism.
+                // 计算当前分区分配给哪一个subtask读取
                 int readerId = partitionOwner(partition);
                 PulsarPartitionSplit split = new PulsarPartitionSplit(partition, stopCursor);
+                // 加入pending列表
                 addSplitToPendingList(readerId, split);
             }
         }
-
+        // 修改初始化标识
         if (!initialized) {
             initialized = true;
         }
@@ -89,6 +97,7 @@ class SplitAssignerImpl implements SplitAssigner {
         }
     }
 
+    // 为指定的readerId分配split
     @Override
     public Optional<SplitsAssignment<PulsarPartitionSplit>> createAssignment(
             List<Integer> readers) {
@@ -120,6 +129,10 @@ class SplitAssignerImpl implements SplitAssigner {
                 && !pendingPartitionSplits.containsKey(reader);
     }
 
+    /**
+     * 快照split状态
+     * @return
+     */
     @Override
     public PulsarSourceEnumState snapshotState() {
         return new PulsarSourceEnumState(appendedPartitions);
